@@ -5,12 +5,13 @@ from scripts.helpful_scripts import (
 )
 
 
-def deploy_bounty():
+def deploy_bounty(_bounty_lockup_duration):
     account = get_account(None)
 
     bounty = Bounty.deploy(
         "Treasure",
         "https://github.com/PatrickAlphaC/smartcontract-lottery/blob/main/scripts/deploy_lottery.py",
+        _bounty_lockup_duration,
         {"from": account},
         publish_source=config["networks"][network.show_active()].get("verify"),
     )

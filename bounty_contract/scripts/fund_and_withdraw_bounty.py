@@ -7,7 +7,10 @@ from scripts.helpful_scripts import (
 from web3 import Web3
 import time
 
-bounty_status_list = ["open", "closed"]
+seconds_to_days = 86400
+# seconds divided by 60 divided by 60 and then divided by 24 is the same as dividing by 86400
+
+bounty_status_list = ["open", "closed but not claimed", "closed"]
 
 
 def fund(bounty_amount):
@@ -29,9 +32,10 @@ def view():
         bounty_amount,
         bounty_status,
         bounty_creation_time,
+        bounty_lockup_duration,
     ) = bounty.view_bounty()
     print(
-        f"The current status of this bounty is {bounty_status_list[bounty_status]}. This bounty is called {bounty_name} and its owner is {owner}. They are offering {Web3.fromWei(bounty_amount, 'ether')} ether for its completion. You can find more info here {bounty_link}. This bounty was created on {time.ctime(bounty_creation_time)}. If you are the bounty owner, and would like to close this bounty (which would result in you withdrawing all of your funds), you must wait 180 days (~6 months) since the bounty creation date, specifically {time.ctime(bounty_creation_time + 15552000)}, to do so."
+        f"The current status of this bounty is {bounty_status_list[bounty_status]}. This bounty is called {bounty_name} and its owner is {owner}. They are offering {Web3.fromWei(bounty_amount, 'ether')} ether for its completion. You can find more info here {bounty_link}. This bounty was created on {time.ctime(bounty_creation_time)}. If you are the bounty owner, and would like to close this bounty (which would result in you withdrawing all of your funds), you must wait {bounty_lockup_duration/seconds_to_days} days since the bounty creation date, specifically until {time.ctime(bounty_creation_time + bounty_lockup_duration)}, to do so."
     )
 
 
