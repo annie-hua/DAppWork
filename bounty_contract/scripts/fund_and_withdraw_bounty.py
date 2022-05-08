@@ -5,6 +5,9 @@ from scripts.helpful_scripts import (
     LOCAL_BLOCKCHAIN_ENVIRONMENTS,
 )
 from web3 import Web3
+import time
+
+bounty_status_list = ["open", "closed"]
 
 
 def fund(bounty_amount):
@@ -25,9 +28,10 @@ def view():
         bounty_link,
         bounty_amount,
         bounty_status,
+        bounty_creation_time,
     ) = bounty.view_bounty()
     print(
-        f"The current status of this bounty is {bounty_status}. This bounty is called {bounty_name} and its owner is {owner}. They are offering {Web3.fromWei(bounty_amount, 'ether')} ether for its completion. You can find more info here {bounty_link}."
+        f"The current status of this bounty is {bounty_status_list[bounty_status]}. This bounty is called {bounty_name} and its owner is {owner}. They are offering {Web3.fromWei(bounty_amount, 'ether')} ether for its completion. You can find more info here {bounty_link}. This bounty was created on {time.ctime(bounty_creation_time)}. If you are the bounty owner, and would like to close this bounty (which would result in you withdrawing all of your funds), you must wait 180 days (~6 months) since the bounty creation date, specifically {time.ctime(bounty_creation_time + 15552000)}, to do so."
     )
 
 
