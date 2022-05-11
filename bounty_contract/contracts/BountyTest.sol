@@ -2,16 +2,15 @@
 
 pragma solidity ^0.8.0;
 
-contract Bounty {
+contract BountyTest {
     address public owner_address;
-    address public oracle;
-    address public hunter_address;
-    string public hunter_github_id;
     string public bounty_name;
-    string public bounty_link;
     uint256 public bounty_amount;
+    string public bounty_link;
+    address public oracle;
     uint256 bounty_creation_time;
-    uint256 bounty_lockup_seconds;
+    int256 bounty_lockup_seconds;
+    string public hunter_github_id;
 
     enum BOUNTY_STATE {
         OPEN,
@@ -24,7 +23,7 @@ contract Bounty {
     constructor(
         string memory _bounty_name,
         string memory _bounty_link,
-        uint256 _bounty_lockup_seconds
+        int256 _bounty_lockup_seconds
     ) {
         owner_address = msg.sender;
         bounty_name = _bounty_name;
@@ -45,9 +44,8 @@ contract Bounty {
             uint256,
             BOUNTY_STATE,
             uint256,
-            uint256,
-            string memory,
-            address
+            int256,
+            string memory
         )
     {
         return (
@@ -58,8 +56,7 @@ contract Bounty {
             bounty_state,
             bounty_creation_time,
             bounty_lockup_seconds,
-            hunter_github_id,
-            hunter_address
+            hunter_github_id
         );
     }
 
@@ -74,7 +71,8 @@ contract Bounty {
             "This bounty is already closed."
         );
         require(
-            block.timestamp > bounty_creation_time + bounty_lockup_seconds,
+            int256(block.timestamp) >
+                int256(bounty_creation_time) + bounty_lockup_seconds,
             "Bounties must be open for at least the lockup duration before they can be closed and have their funds withdrawn by the owner."
         );
         payable(msg.sender).transfer(address(this).balance);

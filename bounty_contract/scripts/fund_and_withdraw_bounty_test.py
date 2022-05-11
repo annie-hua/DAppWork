@@ -1,5 +1,5 @@
-from brownie import Bounty, network, config
-from scripts.deploy_bounty import deploy_bounty
+from brownie import BountyTest, network, config
+from scripts.deploy_bounty_test import deploy_bounty_test
 from scripts.helpful_scripts import (
     get_account,
     LOCAL_BLOCKCHAIN_ENVIRONMENTS,
@@ -14,7 +14,7 @@ bounty_status_list = ["open", "awaiting claim", "closed", "canceled"]
 
 
 def fund(bounty_amount):
-    bounty = Bounty[-1]
+    bounty = BountyTest[-1]
     account = get_account(None)
     bounty.fund_bounty({"from": account, "value": bounty_amount})
     print(
@@ -23,7 +23,7 @@ def fund(bounty_amount):
 
 
 def view():
-    bounty = Bounty[-1]
+    bounty = BountyTest[-1]
     account = get_account(None)
     (
         owner,
@@ -51,14 +51,14 @@ def view():
 
 
 def withdraw():
-    bounty = Bounty[-1]
+    bounty = BountyTest[-1]
     account = get_account(None)
     bounty.withdraw_bounty({"from": account})
 
 
 def main():
-    deploy_bounty(-16552000)
-    fund(100000000000000000)
+    deploy_bounty_test(-16552000)
+    fund(10000000000000000)
     view()
     withdraw()
     view()

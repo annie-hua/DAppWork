@@ -10,6 +10,8 @@ networks:
   default: development
   rinkeby:
     verify: True
+  polygon-test:
+    verify: True
   mainnet-fork:
     verify: False
   development:

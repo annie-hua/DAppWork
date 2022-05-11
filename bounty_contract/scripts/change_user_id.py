@@ -14,12 +14,16 @@ from scripts.helpful_scripts import (
 from web3 import Web3
 import time
 
-# will add a python function here that will call the "change_user_id" solidity function
+
+def change_hunter_github_id(_hunter_github_id):
+    bounty = Bounty[-1]
+    account = get_account("oracle")
+    bounty.change_hunter_github_id(_hunter_github_id, {"from": account})
 
 
 def main():
     deploy_bounty(15552000)
-    fund(100000000000000000)
+    fund(10000000000000000)
     view()
-    withdraw()
+    change_hunter_github_id("dog_the_bounty_hunter")
     view()
