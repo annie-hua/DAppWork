@@ -3,6 +3,11 @@ from web3 import Web3
 
 FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork", "mainnet-fork-dev"]
 LOCAL_BLOCKCHAIN_ENVIRONMENTS = ["development", "ganache-local"]
+bounty_status_list = ["open", "awaiting claim", "closed", "canceled"]
+
+seconds_to_days = 86400
+# seconds divided by 60 divided by 60 and then divided by 24 is the same as dividing by 86400
+
 
 DECIMALS = 8
 STARTING_PRICE = 200000000000

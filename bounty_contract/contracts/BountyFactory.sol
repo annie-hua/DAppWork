@@ -1,28 +1,54 @@
 // SPDX-License-Identifier: MIT
 
-// pragma solidity ^0.8.0;
+pragma solidity 0.8.0;
 
-// import "./Bounty.sol";
+import "./Bounty.sol";
 
-// contract BountyFactory is Bounty {
-//     Bounty[] public bountyArray;
+contract BountyFactory is Bounty {
+    Bounty[] public bountyArray;
 
-//     function createBountyContract() public {
-//         Bounty bounty = new Bounty();
-//         bountyArray.push(bounty);
-//     }
+    constructor()
+        Bounty("Bounty Factory Contract", "Not Applicable", 0, msg.sender)
+    {}
 
-//     function sfStore(uint256 _simpleStorageIndex, uint256 _simpleStorageNumber)
-//         public
-//     {
-//         SimpleStorage(address(simpleStorageArray[_simpleStorageIndex])).store(
-//             _simpleStorageNumber
-//         );
-//     }
+    function createBountyContract(
+        string memory _bounty_name,
+        string memory _bounty_link,
+        uint256 _bounty_lockup_seconds,
+        address _owner_address
+    ) public {
+        Bounty bounty = new Bounty(
+            _bounty_name,
+            _bounty_link,
+            _bounty_lockup_seconds,
+            _owner_address
+        );
+        bountyArray.push(bounty);
+    }
 
-//     function sfGet(uint256 _simpleStorageIndex) public view returns (uint256) {
-//         return
-//             SimpleStorage(address(simpleStorageArray[_simpleStorageIndex]))
-//                 .retrieve();
-//     }
-// }
+    function bfViewBounty(uint256 _bountyIndex)
+        public
+        view
+        returns (
+            address,
+            string memory,
+            string memory,
+            uint256,
+            BOUNTY_STATE,
+            uint256,
+            uint256,
+            string memory,
+            address
+        )
+    {
+        return Bounty(address(bountyArray[_bountyIndex])).view_bounty();
+    }
+
+    function bfReturnBountyAddress(uint256 _bountyIndex)
+        public
+        view
+        returns (address)
+    {
+        return address(bountyArray[_bountyIndex]);
+    }
+}

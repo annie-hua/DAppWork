@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+//This contract was made to primarily test the lockup period feature.
 
 pragma solidity ^0.8.0;
 

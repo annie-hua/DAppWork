@@ -1,3 +1,5 @@
+# This script was made to primarily test the lockup period feature.
+
 from brownie import BountyTest, network, config
 from scripts.deploy_bounty_test import deploy_bounty_test
 from scripts.helpful_scripts import (

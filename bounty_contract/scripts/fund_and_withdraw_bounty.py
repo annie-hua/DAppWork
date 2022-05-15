@@ -34,6 +34,7 @@ def view():
         bounty_creation_time,
         bounty_lockup_seconds,
         user_id,
+        hunter_address,
     ) = bounty.view_bounty()
 
     if bounty_status_list[bounty_status] == "awaiting claim":
@@ -57,7 +58,7 @@ def withdraw():
 
 
 def main():
-    deploy_bounty(-16552000)
+    deploy_bounty(15552000)
     fund(100000000000000000)
     view()
     withdraw()

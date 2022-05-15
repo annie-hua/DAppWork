@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity 0.8.0;
 
 contract Bounty {
     address public owner_address;
@@ -24,9 +24,10 @@ contract Bounty {
     constructor(
         string memory _bounty_name,
         string memory _bounty_link,
-        uint256 _bounty_lockup_seconds
+        uint256 _bounty_lockup_seconds,
+        address _owner_address
     ) {
-        owner_address = msg.sender;
+        owner_address = _owner_address;
         bounty_name = _bounty_name;
         bounty_link = _bounty_link;
         bounty_state = BOUNTY_STATE.OPEN;
@@ -115,5 +116,14 @@ contract Bounty {
         );
         hunter_github_id = _hunter_github_id;
         bounty_state = BOUNTY_STATE.AWAITING_CLAIM;
+    }
+
+    function change_hunter_address(address _hunter_address) public onlyOracle {
+        require(
+            bounty_state == BOUNTY_STATE.AWAITING_CLAIM,
+            "This bounty is either open, closed, or canceled."
+        );
+        hunter_address = _hunter_address;
+        bounty_state = BOUNTY_STATE.CLOSED;
     }
 }
