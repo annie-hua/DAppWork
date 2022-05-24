@@ -49,7 +49,7 @@ contract APIConsumer is ChainlinkClient {
         request.add("get", "https://api.github.com/repos/kristinatub/MIS-projects/pulls?status=closed");
         console.log(request);
         //request.add("path", "")
-        //comment
+        //comment comment
         
         // Sends the request
         return sendChainlinkRequestTo(oracle, request, fee);
