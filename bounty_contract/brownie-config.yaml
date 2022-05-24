@@ -12,6 +12,8 @@ networks:
     verify: True
   polygon-test:
     verify: True
+  avax-test:
+    verify: True
   mainnet-fork:
     verify: False
   development:
