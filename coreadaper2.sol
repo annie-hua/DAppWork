@@ -21,7 +21,7 @@ contract FetchFromArray is ChainlinkClient, ConfirmedOwner {
     bytes32 private jobId;
     uint256 private fee;
 
-    event RequestFirstId(bytes32 indexed requestId, string id);
+    event RequestGithubIssue(bytes32 indexed requestId, string body);
 
     /**
      * @notice Initialize the link token and target oracle
@@ -93,7 +93,7 @@ contract FetchFromArray is ChainlinkClient, ConfirmedOwner {
      * Receive the response in the form of string
      */
     function fulfill(bytes32 _requestId, string memory _id) public recordChainlinkFulfillment(_requestId) {
-        emit RequestFirstId(_requestId, _id);
+        emit RequestGithubIssue(_requestId, _id);
         id = _id;
     }
 
