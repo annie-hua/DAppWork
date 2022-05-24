@@ -44,6 +44,22 @@ contract BountyFactory is Bounty {
         return Bounty(address(bountyArray[_bountyIndex])).view_bounty();
     }
 
+    function bfViewBountyArrayLength()
+        public
+        view
+        returns (uint256 _bountyArrayLength)
+    {
+        return bountyArray.length;
+    }
+
+    function bfViewBountyArray()
+        public
+        view
+        returns (Bounty[] memory _bountyArray)
+    {
+        return bountyArray;
+    }
+
     function bfReturnBountyAddress(uint256 _bountyIndex)
         public
         view
