@@ -10,6 +10,8 @@ networks:
   default: development
   rinkeby:
     verify: True
+  kovan:
+    verify: True
   polygon-test:
     verify: True
   avax-test:

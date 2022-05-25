@@ -25,13 +25,15 @@ def create_bounty_with_factory(
 ):
     bounty_factory = BountyFactory[-1]
     account = get_account(None)
-    bounty_factory.createBountyContract(
+    tx = bounty_factory.createBountyContract(
         _bounty_name,
         _bounty_link,
         _bounty_lockup_seconds,
         _owner_address,
         {"from": account},
     )
+    tx.wait(1)
+    return tx.events[0]["bountyIndex"]
 
 
 def view_bounty_through_factory(_bounty_index):

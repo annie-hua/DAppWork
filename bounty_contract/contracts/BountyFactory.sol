@@ -6,6 +6,7 @@ import "./Bounty.sol";
 
 contract BountyFactory is Bounty {
     Bounty[] public bountyArray;
+    event RequestedBountyIndex(uint256 bountyIndex);
 
     constructor()
         Bounty("Bounty Factory Contract", "Not Applicable", 0, msg.sender)
@@ -16,7 +17,7 @@ contract BountyFactory is Bounty {
         string memory _bounty_link,
         uint256 _bounty_lockup_seconds,
         address _owner_address
-    ) public {
+    ) public returns (uint256 bountyIndex) {
         Bounty bounty = new Bounty(
             _bounty_name,
             _bounty_link,
@@ -24,6 +25,8 @@ contract BountyFactory is Bounty {
             _owner_address
         );
         bountyArray.push(bounty);
+        bountyIndex = bountyArray.length - 1;
+        emit RequestedBountyIndex(bountyIndex);
     }
 
     function bfViewBounty(uint256 _bountyIndex)
@@ -67,4 +70,8 @@ contract BountyFactory is Bounty {
     {
         return address(bountyArray[_bountyIndex]);
     }
+
+    // This function will initiate the chainlink job, it will take as an input the pull request API link and the pull request index. It will also check to make sure there is enough LINK token in the contract so Chainlink oracle will be paid
+
+    // function bf
 }
