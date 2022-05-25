@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 import "./Bounty.sol";
+import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 
-contract BountyFactory is Bounty {
+contract BountyFactory is Bounty, ChainlinkClient, ConfirmedOwner {
+    using Chainlink for Chainlink.Request;
     Bounty[] public bountyArray;
     event RequestedBountyIndex(uint256 bountyIndex);
 
@@ -47,6 +50,24 @@ contract BountyFactory is Bounty {
         return Bounty(address(bountyArray[_bountyIndex])).view_bounty();
     }
 
+    function bfViewBounty_b32(uint256 _bountyIndex)
+        public
+        view
+        returns (
+            address,
+            bytes32,
+            bytes32,
+            uint256,
+            BOUNTY_STATE,
+            uint256,
+            uint256,
+            bytes32,
+            address
+        )
+    {
+        return Bounty(address(bountyArray[_bountyIndex])).view_bounty_b32();
+    }
+
     function bfViewBountyArrayLength()
         public
         view
@@ -73,5 +94,5 @@ contract BountyFactory is Bounty {
 
     // This function will initiate the chainlink job, it will take as an input the pull request API link and the pull request index. It will also check to make sure there is enough LINK token in the contract so Chainlink oracle will be paid
 
-    // function bf
+    function bfRunChainlinkJobAndCloseBounty(string memory _pull_link) public {}
 }

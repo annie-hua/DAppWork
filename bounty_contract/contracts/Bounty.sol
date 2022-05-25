@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 contract Bounty {
     address public owner_address;
@@ -12,6 +12,9 @@ contract Bounty {
     uint256 public bounty_amount;
     uint256 bounty_creation_time;
     uint256 bounty_lockup_seconds;
+    bytes32 bounty_name_b32;
+    bytes32 bounty_link_b32;
+    bytes32 hunter_github_id_b32;
 
     enum BOUNTY_STATE {
         OPEN,
@@ -60,6 +63,34 @@ contract Bounty {
             bounty_creation_time,
             bounty_lockup_seconds,
             hunter_github_id,
+            hunter_address
+        );
+    }
+
+    function view_bounty_b32()
+        public
+        view
+        returns (
+            address,
+            bytes32,
+            bytes32,
+            uint256,
+            BOUNTY_STATE,
+            uint256,
+            uint256,
+            bytes32,
+            address
+        )
+    {
+        return (
+            owner_address,
+            bounty_name_b32,
+            bounty_link_b32,
+            bounty_amount,
+            bounty_state,
+            bounty_creation_time,
+            bounty_lockup_seconds,
+            hunter_github_id_b32,
             hunter_address
         );
     }
