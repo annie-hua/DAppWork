@@ -27,7 +27,7 @@ contract BountyFactory is Bounty, ChainlinkClient {
         setChainlinkToken(0xa36085F69e2889c224210F603D836748e7dC0088);
         setChainlinkOracle(0x74EcC8Bdeb76F2C6760eD2dc8A46ca5e581fA656);
         jobId = "7d80a6386ef543a3abb52817f6707e3b";
-        fee = (1 * LINK_DIVISIBILITY) / 10; // 0,1 * 10**18 (Varies by network and job)
+        fee = (1 * LINK_DIVISIBILITY) / 10;
     }
 
     function createBountyContract(
@@ -58,29 +58,10 @@ contract BountyFactory is Bounty, ChainlinkClient {
             BOUNTY_STATE,
             uint256,
             uint256,
-            string memory,
             address
         )
     {
         return Bounty(address(bountyArray[_bountyIndex])).view_bounty();
-    }
-
-    function bfViewBounty_b32(uint256 _bountyIndex)
-        public
-        view
-        returns (
-            address,
-            bytes32,
-            bytes32,
-            uint256,
-            BOUNTY_STATE,
-            uint256,
-            uint256,
-            bytes32,
-            address
-        )
-    {
-        return Bounty(address(bountyArray[_bountyIndex])).view_bounty_b32();
     }
 
     function bfViewBountyArrayLength()
@@ -129,10 +110,4 @@ contract BountyFactory is Bounty, ChainlinkClient {
         emit RequestFirstId(_requestId, _pr_body);
         pr_body = _pr_body;
     }
-
-    // This function will initiate the chainlink job, it will take as an input the pull request API link and the pull request index. It will also check to make sure there is enough LINK token in the contract so Chainlink oracle will be paid
-
-    // function bfRunChainlinkJobAndCloseBounty(string memory _pull_request_link)
-    //     public
-    // {}
 }

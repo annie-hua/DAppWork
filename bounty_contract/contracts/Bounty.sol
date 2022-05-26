@@ -6,15 +6,11 @@ contract Bounty {
     address public owner_address;
     address public oracle;
     address public hunter_address;
-    string public hunter_github_id;
     string public bounty_name;
     string public bounty_link;
     uint256 public bounty_amount;
     uint256 bounty_creation_time;
     uint256 bounty_lockup_seconds;
-    bytes32 bounty_name_b32;
-    bytes32 bounty_link_b32;
-    bytes32 hunter_github_id_b32;
 
     enum BOUNTY_STATE {
         OPEN,
@@ -50,7 +46,6 @@ contract Bounty {
             BOUNTY_STATE,
             uint256,
             uint256,
-            string memory,
             address
         )
     {
@@ -62,35 +57,6 @@ contract Bounty {
             bounty_state,
             bounty_creation_time,
             bounty_lockup_seconds,
-            hunter_github_id,
-            hunter_address
-        );
-    }
-
-    function view_bounty_b32()
-        public
-        view
-        returns (
-            address,
-            bytes32,
-            bytes32,
-            uint256,
-            BOUNTY_STATE,
-            uint256,
-            uint256,
-            bytes32,
-            address
-        )
-    {
-        return (
-            owner_address,
-            bounty_name_b32,
-            bounty_link_b32,
-            bounty_amount,
-            bounty_state,
-            bounty_creation_time,
-            bounty_lockup_seconds,
-            hunter_github_id_b32,
             hunter_address
         );
     }
@@ -135,18 +101,6 @@ contract Bounty {
         payable(_bounty_winner).transfer(address(this).balance);
         bounty_amount = address(this).balance;
         bounty_state = BOUNTY_STATE.CLOSED;
-    }
-
-    function change_hunter_github_id(string memory _hunter_github_id)
-        public
-        onlyOracle
-    {
-        require(
-            bounty_state == BOUNTY_STATE.OPEN,
-            "This bounty is already closed."
-        );
-        hunter_github_id = _hunter_github_id;
-        bounty_state = BOUNTY_STATE.AWAITING_CLAIM;
     }
 
     function change_hunter_address(address _hunter_address) public onlyOracle {

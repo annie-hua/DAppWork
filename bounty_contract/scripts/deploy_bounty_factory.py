@@ -10,7 +10,7 @@ def deploy_bounty_factory():
 
     bounty_factory = BountyFactory.deploy(
         {"from": account},
-        # publish_source=config["networks"][network.show_active()].get("verify"),
+        publish_source=config["networks"][network.show_active()].get("verify"),
     )
     print(f"Contract deployed to {bounty_factory.address}")
     return bounty_factory
