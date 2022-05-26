@@ -3,17 +3,32 @@
 pragma solidity ^0.8.0;
 
 import "./Bounty.sol";
+import "./strings.sol";
+
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 
-contract BountyFactory is Bounty, ChainlinkClient, ConfirmedOwner {
+contract BountyFactory is Bounty, ChainlinkClient {
     using Chainlink for Chainlink.Request;
+    // using strings for *;
     Bounty[] public bountyArray;
     event RequestedBountyIndex(uint256 bountyIndex);
 
+    string public pr_body;
+
+    bytes32 private jobId;
+    uint256 private fee;
+
+    event RequestFirstId(bytes32 indexed requestId, string id);
+
     constructor()
         Bounty("Bounty Factory Contract", "Not Applicable", 0, msg.sender)
-    {}
+    {
+        setChainlinkToken(0xa36085F69e2889c224210F603D836748e7dC0088);
+        setChainlinkOracle(0x74EcC8Bdeb76F2C6760eD2dc8A46ca5e581fA656);
+        jobId = "7d80a6386ef543a3abb52817f6707e3b";
+        fee = (1 * LINK_DIVISIBILITY) / 10; // 0,1 * 10**18 (Varies by network and job)
+    }
 
     function createBountyContract(
         string memory _bounty_name,
@@ -92,7 +107,32 @@ contract BountyFactory is Bounty, ChainlinkClient, ConfirmedOwner {
         return address(bountyArray[_bountyIndex]);
     }
 
+    function requestPullRequestBody(string memory _parsed_pull_request_link)
+        public
+        returns (bytes32 requestId)
+    {
+        Chainlink.Request memory req = buildChainlinkRequest(
+            jobId,
+            address(this),
+            this.fulfill.selector
+        );
+
+        req.add("get", _parsed_pull_request_link);
+        req.add("path", "body");
+        return sendChainlinkRequest(req, fee);
+    }
+
+    function fulfill(bytes32 _requestId, string memory _pr_body)
+        public
+        recordChainlinkFulfillment(_requestId)
+    {
+        emit RequestFirstId(_requestId, _pr_body);
+        pr_body = _pr_body;
+    }
+
     // This function will initiate the chainlink job, it will take as an input the pull request API link and the pull request index. It will also check to make sure there is enough LINK token in the contract so Chainlink oracle will be paid
 
-    function bfRunChainlinkJobAndCloseBounty(string memory _pull_link) public {}
+    // function bfRunChainlinkJobAndCloseBounty(string memory _pull_request_link)
+    //     public
+    // {}
 }

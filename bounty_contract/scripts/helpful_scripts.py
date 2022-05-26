@@ -1,5 +1,11 @@
-from brownie import network, config, accounts
+from brownie import network, config, accounts, Contract
 from web3 import Web3
+import json
+
+with open("./build/contracts/LinkToken.json") as f:
+    data = json.load(f)
+
+link_token_abi = data["abi"]
 
 FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork", "mainnet-fork-dev"]
 LOCAL_BLOCKCHAIN_ENVIRONMENTS = ["development", "ganache-local"]
@@ -37,3 +43,16 @@ def get_account(_account_number):
         else:
 
             return accounts.add(config["wallets"]["from_key"])
+
+
+def fund_with_link(
+    contract_address, account=None, link_token=None, amount=100000000000000000
+):  # 0.1 LINK
+    account = get_account(0)
+    link_token_contract_address = config["networks"][network.show_active()][
+        "link_token"
+    ]
+    link_token_contract = Contract.from_abi(
+        "link_token_contract", link_token_contract_address, link_token_abi
+    )
+    link_token_contract.transfer(contract_address, amount, {"from": account})
