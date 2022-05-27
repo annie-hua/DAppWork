@@ -1,3 +1,3 @@
 # DAppWork
 
-The greatest app in the history of the universe!
+The decentralized marketplace for programming-related gig work!
