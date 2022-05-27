@@ -10,6 +10,7 @@ import json
 import pandas as pd
 from web3 import Web3
 import time
+import datetime
 
 pd.set_option("display.max_columns", None)
 
@@ -374,6 +375,116 @@ def pythonic_dappwork_ui():
                         )
 
                     user_choice = 0
+
+            # This is for the withdraw
+            while int(user_choice) == 4:
+
+                print(
+                    "\nYou selected to withdraw a bounty. You can find the list of currently open bounties below:\n"
+                )
+
+                total_number_of_bounties = (
+                    bounty_factory_contract.bfViewBountyArrayLength()
+                )
+
+                list_of_bounties = []
+
+                for bounty_index in range(total_number_of_bounties):
+
+                    (
+                        owner,
+                        bounty_name,
+                        bounty_link,
+                        bounty_amount,
+                        bounty_state,
+                        bounty_creation_time_in_seconds,
+                        bounty_lockup_seconds,
+                        hunter_address,
+                    ) = bounty_factory_contract.bfViewBounty(bounty_index)
+
+                    bounty_amount_in_eth = Web3.fromWei(bounty_amount, "ether")
+
+                    bounty_state = bounty_state_list[bounty_state]
+
+                    bounty_creation_time = time.ctime(bounty_creation_time_in_seconds)
+
+                    lockup_end_date = time.ctime(
+                        bounty_creation_time_in_seconds + bounty_lockup_seconds
+                    )
+
+                    current_bounty_info = [
+                        owner,
+                        bounty_name,
+                        bounty_link,
+                        bounty_amount_in_eth,
+                        bounty_state,
+                        bounty_creation_time,
+                        lockup_end_date,
+                        hunter_address,
+                    ]
+
+                    list_of_bounties.append(current_bounty_info)
+
+                df_list_of_bounties = pd.DataFrame(
+                    list_of_bounties,
+                    columns=[
+                        "Owner",
+                        "Name",
+                        "Github Issue Link",
+                        "Reward Amount (ETH)",
+                        "Status",
+                        "Creation Time",
+                        "Lockup End Date",
+                        "Winner",
+                    ],
+                )
+
+                print(df_list_of_bounties)
+
+                withdrawing_bounty_index = int(
+                    input(
+                        "\nPlease enter the row number of bounty you'd like to withdraw. Please note you can only withdraw a bounty that you are the owner of and which has a lockup end date that has passed. If you select a bounty whose lockup period has not ended, the transaction will fail.:\n\n"
+                    )
+                )
+
+                withdrawing_bounty_row = df_list_of_bounties.iloc[
+                    withdrawing_bounty_index
+                ]
+
+                withdrawing_bounty_lockup_end_date = withdrawing_bounty_row[
+                    "Lockup End Date"
+                ]
+
+                confirm_withdraw_bounty = "maybe"
+
+                confirm_withdraw_bounty_options = ["y", "n"]
+
+                while confirm_withdraw_bounty not in confirm_withdraw_bounty_options:
+
+                    confirm_withdraw_bounty = input(
+                        f"You selected to withdraw the following bounty:\n\n{withdrawing_bounty_row}\n\nIf you'd like to continue, please enter 'y'. If you'd like to cancel and return to the main menu enter 'n'.\n\n"
+                    )
+
+                    if confirm_withdraw_bounty not in confirm_withdraw_bounty_options:
+
+                        print(
+                            f'\nInvalid Entry: You entered "{confirm_close_bounty}", please make sure to enter one of the options listed above instead.\n'
+                        )
+
+                        confirm_close_bounty = "maybe"
+
+                    withdrawing_bounty_address = (
+                        bounty_factory_contract.bfReturnBountyAddress(
+                            withdrawing_bounty_index
+                        )
+                    )
+                    withdrawing_bounty_contract = Contract.from_abi(
+                        "withdrawing_bounty", withdrawing_bounty_address, bounty_abi
+                    )
+                    withdrawing_bounty_contract.withdraw_bounty({"from": account})
+                    print(
+                        f"You just withdrew bounty number {withdrawing_bounty_index} and you should receive the bounty reward back into your wallet.\n\nYou will now be returned to the main menu."
+                    )
 
         i = 0
 
