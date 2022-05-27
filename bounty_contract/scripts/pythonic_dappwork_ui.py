@@ -26,7 +26,7 @@ with open("./build/contracts/Bounty.json") as f:
 
 bounty_abi = bounty_json["abi"]
 
-bounty_factory_contract_address = "0xCe8C2F0cD1864174D9b581fa97138EC8945dDD2c"
+bounty_factory_contract_address = "0x1FE94CDA16AAF50f300fE78AC97A3d677452bA2a"
 bounty_factory_contract = Contract.from_abi(
     "Bounty_Factory_Contract", bounty_factory_contract_address, bounty_factory_abi
 )
@@ -328,20 +328,50 @@ def pythonic_dappwork_ui():
                         confirm_close_bounty = "maybe"
 
                 if confirm_close_bounty == "y":
+
+                    print("\n")
+
                     fund_with_link(bounty_factory_contract_address)
 
                     print("\nYou successfully funded the contract with 0.1 LINK!")
 
                     pull_request_link = input(
-                        "\nPlease make sure that the body of the pull request comment is in the following format '{Github Issue Link for Bounty}, {Your ETH Address}'. Also, do NOT update your pull request in any way after it has been merged as this will result in your pull request being ineligible to earn a bounty.\n\nIn order to close this bounty, please provide us with a Github link with your pull request that has been merged:\n\n"
+                        "\nPlease make sure that the body of the pull request comment is in the following format '{Github Issue Link for Bounty}, {Your ETH Address}'. Also, do NOT update your pull request in any way after it has been merged as this will result in your pull request being ineligible to earn a bounty.\n\nIn order to close this bounty, please provide us with a Github link of your pull request that has been merged:\n\n"
                     )
                     parsed_pull_request_link = pull_request_converter(pull_request_link)
+                    print("\n")
                     tx = bounty_factory_contract.requestPullRequestBody(
-                        parsed_pull_request_link
+                        parsed_pull_request_link,
+                        {"from": account},
                     )
-                    tx.wait(1)
-                    pull_request_body = bounty_factory_contract.bfViewPullRequestBody()
-                    print(pull_request_body)
+                    tx.wait(5)
+                    pull_request_body = bounty_factory_contract.bfViewPullRequestBody(
+                        {"from": account}
+                    )
+                    pull_request_body_components = pull_request_body.split(", ")
+
+                    bounty_issue_link = pull_request_body_components[0]
+
+                    bounty_hunter_eth_address = pull_request_body_components[1]
+
+                    if bounty_issue_link == closing_bounty_row["Github Issue Link"]:
+                        oracle_account = get_account("oracle")
+                        closing_bounty_address = (
+                            bounty_factory_contract.bfReturnBountyAddress(
+                                closing_bounty_index
+                            )
+                        )
+                        closing_bounty_contract = Contract.from_abi(
+                            "closing_bounty", closing_bounty_address, bounty_abi
+                        )
+                        closing_bounty_contract.close_bounty(
+                            bounty_hunter_eth_address, {"from": oracle_account}
+                        )
+
+                    else:
+                        print(
+                            "Error: The pull request you provided either has a comment body that has a Github issue link that does not match the Github issue link of the bounty you are wanting to close, or there is some other problem with it."
+                        )
 
                     user_choice = 0
 
