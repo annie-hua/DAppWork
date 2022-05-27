@@ -3,7 +3,6 @@
 pragma solidity ^0.8.0;
 
 import "./Bounty.sol";
-import "./strings.sol";
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
@@ -62,6 +61,14 @@ contract BountyFactory is Bounty, ChainlinkClient {
         )
     {
         return Bounty(address(bountyArray[_bountyIndex])).view_bounty();
+    }
+
+    function bfViewPullRequestBody()
+        public
+        view
+        returns (string memory _pr_body)
+    {
+        return pr_body;
     }
 
     function bfViewBountyArrayLength()

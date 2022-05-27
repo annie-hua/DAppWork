@@ -1,14 +1,20 @@
+from contextlib import closing
 from click import confirm
 from brownie import Bounty, BountyFactory, network, config, Contract
-from scripts.helpful_scripts import get_account
+from scripts.helpful_scripts import get_account, fund_with_link
 from scripts.view_bounty_array import (
     view_bounty_factory_array_length,
     view_bounty_array_contents,
 )
 import json
 import pandas as pd
+from web3 import Web3
+import time
+
+pd.set_option("display.max_columns", None)
 
 i = 0
+bounty_state_list = ["open", "closed", "withdrawn"]
 
 with open("./build/contracts/BountyFactory.json") as f:
     bounty_factory_json = json.load(f)
@@ -26,6 +32,16 @@ bounty_factory_contract = Contract.from_abi(
 )
 
 account = get_account(0)
+
+
+def pull_request_converter(_pull_request_link):
+    first_list = _pull_request_link.split("//")
+    first_addition = first_list[0] + "//api." + first_list[1]
+    second_list = first_addition.split(".com")
+    second_addition = second_list[0] + ".com/repos" + second_list[1]
+    third_list = second_addition.split("pull")
+    parsed_pull_request = third_list[0] + "issues" + third_list[1]
+    return parsed_pull_request
 
 
 def pythonic_dappwork_ui():
@@ -50,8 +66,13 @@ def pythonic_dappwork_ui():
                     f'\nInvalid Entry: You entered "{user_choice}", please make sure to select one of the numbers listed above instead.'
                 )
 
-            # This is for the list all existing bounties option
+            if int(user_choice) == 5:
 
+                print(
+                    "\nYou selected to close DappWork. Goodbye and have a nice day!\n"
+                )
+
+            # This is for the list all existing bounties option
             while int(user_choice) == 1:
 
                 print(
@@ -72,23 +93,57 @@ def pythonic_dappwork_ui():
                         bounty_link,
                         bounty_amount,
                         bounty_state,
-                        bounty_creation_time,
+                        bounty_creation_time_in_seconds,
                         bounty_lockup_seconds,
                         hunter_address,
                     ) = bounty_factory_contract.bfViewBounty(bounty_index)
+
+                    bounty_amount_in_eth = Web3.fromWei(bounty_amount, "ether")
+
+                    bounty_state = bounty_state_list[bounty_state]
+
+                    bounty_creation_time = time.ctime(bounty_creation_time_in_seconds)
+
+                    lockup_end_date = time.ctime(
+                        bounty_creation_time_in_seconds + bounty_lockup_seconds
+                    )
 
                     current_bounty_info = [
                         owner,
                         bounty_name,
                         bounty_link,
-                        bounty_amount,
+                        bounty_amount_in_eth,
                         bounty_state,
                         bounty_creation_time,
-                        bounty_lockup_seconds,
+                        lockup_end_date,
                         hunter_address,
                     ]
 
                     list_of_bounties.append(current_bounty_info)
+
+                df_list_of_bounties = pd.DataFrame(
+                    list_of_bounties,
+                    columns=[
+                        "Owner",
+                        "Name",
+                        "Github Issue Link",
+                        "Reward Amount (ETH)",
+                        "Status",
+                        "Creation Time",
+                        "Lockup End Date",
+                        "Winner",
+                    ],
+                )
+
+                print(
+                    "\nPlease note that if you are a bounty hunter, in order to receive the bounty, you must submit a pull request to the repo that has the open issue associated with said bounty and this pull request must get merged. You MUST ensure that the comment body of your pull request is in the following format '{Github Issue Link for Bounty}, {Your ETH Address}'. Also, do NOT update your pull request in any way after it has been merged as this will result in your pull request being ineligible to earn a bounty."
+                )
+
+                print(df_list_of_bounties)
+
+                print("\nYou will now be returned to the main menu.")
+
+                user_choice = 0
 
             # This is for the create a new bounty option
             while int(user_choice) == 2:
@@ -111,7 +166,7 @@ def pythonic_dappwork_ui():
                     )
                 )
 
-                bounty_amount_in_wei = bounty_amount * 1000000000000000000  # 18 zeros
+                bounty_amount_in_wei = Web3.toWei(bounty_amount, "ether")
 
                 bounty_lockup_options = [3, 6, 9, 12]
 
@@ -192,6 +247,8 @@ def pythonic_dappwork_ui():
                     bounty_factory_contract.bfViewBountyArrayLength()
                 )
 
+                list_of_bounties = []
+
                 for bounty_index in range(total_number_of_bounties):
 
                     (
@@ -200,27 +257,93 @@ def pythonic_dappwork_ui():
                         bounty_link,
                         bounty_amount,
                         bounty_state,
-                        bounty_creation_time,
+                        bounty_creation_time_in_seconds,
                         bounty_lockup_seconds,
                         hunter_address,
                     ) = bounty_factory_contract.bfViewBounty(bounty_index)
+
+                    bounty_amount_in_eth = Web3.fromWei(bounty_amount, "ether")
+
+                    bounty_state = bounty_state_list[bounty_state]
+
+                    bounty_creation_time = time.ctime(bounty_creation_time_in_seconds)
+
+                    lockup_end_date = time.ctime(
+                        bounty_creation_time_in_seconds + bounty_lockup_seconds
+                    )
 
                     current_bounty_info = [
                         owner,
                         bounty_name,
                         bounty_link,
-                        bounty_amount,
+                        bounty_amount_in_eth,
                         bounty_state,
                         bounty_creation_time,
-                        bounty_lockup_seconds,
+                        lockup_end_date,
                         hunter_address,
                     ]
 
-                    print(current_bounty_info)
+                    list_of_bounties.append(current_bounty_info)
 
-                input(
-                    "\nPlease select from the list of bounties which one you'd like to close:\n"
+                df_list_of_bounties = pd.DataFrame(
+                    list_of_bounties,
+                    columns=[
+                        "Owner",
+                        "Name",
+                        "Github Issue Link",
+                        "Reward Amount (ETH)",
+                        "Status",
+                        "Creation Time",
+                        "Lockup End Date",
+                        "Winner",
+                    ],
                 )
+
+                print(df_list_of_bounties)
+
+                closing_bounty_index = int(
+                    input(
+                        "\nPlease enter the row number of bounty you'd like to close:\n\n"
+                    )
+                )
+
+                closing_bounty_row = df_list_of_bounties.iloc[closing_bounty_index]
+
+                confirm_close_bounty = "maybe"
+
+                confirm_close_bounty_options = ["y", "n"]
+
+                while confirm_close_bounty not in confirm_close_bounty_options:
+
+                    confirm_close_bounty = input(
+                        f"You selected to close the following bounty:\n\n{closing_bounty_row}\n\nIf you'd like to continue, please enter 'y'. If you'd like to cancel and return to the main menu enter 'n'.\n\n"
+                    )
+
+                    if confirm_close_bounty not in confirm_close_bounty_options:
+
+                        print(
+                            f'\nInvalid Entry: You entered "{confirm_close_bounty}", please make sure to enter one of the options listed above instead.\n'
+                        )
+
+                        confirm_close_bounty = "maybe"
+
+                if confirm_close_bounty == "y":
+                    fund_with_link(bounty_factory_contract_address)
+
+                    print("\nYou successfully funded the contract with 0.1 LINK!")
+
+                    pull_request_link = input(
+                        "\nPlease make sure that the body of the pull request comment is in the following format '{Github Issue Link for Bounty}, {Your ETH Address}'. Also, do NOT update your pull request in any way after it has been merged as this will result in your pull request being ineligible to earn a bounty.\n\nIn order to close this bounty, please provide us with a Github link with your pull request that has been merged:\n\n"
+                    )
+                    parsed_pull_request_link = pull_request_converter(pull_request_link)
+                    tx = bounty_factory_contract.requestPullRequestBody(
+                        parsed_pull_request_link
+                    )
+                    tx.wait(1)
+                    pull_request_body = bounty_factory_contract.bfViewPullRequestBody()
+                    print(pull_request_body)
+
+                    user_choice = 0
 
         i = 0
 

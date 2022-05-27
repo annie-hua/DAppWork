@@ -14,9 +14,8 @@ contract Bounty {
 
     enum BOUNTY_STATE {
         OPEN,
-        AWAITING_CLAIM,
         CLOSED,
-        CANCELED
+        WITHDRAWN
     }
     BOUNTY_STATE public bounty_state;
 
@@ -77,7 +76,7 @@ contract Bounty {
         );
         payable(msg.sender).transfer(address(this).balance);
         bounty_amount = address(this).balance;
-        bounty_state = BOUNTY_STATE.CANCELED;
+        bounty_state = BOUNTY_STATE.WITHDRAWN;
     }
 
     function fund_bounty() public payable onlyOwner {
@@ -105,8 +104,8 @@ contract Bounty {
 
     function change_hunter_address(address _hunter_address) public onlyOracle {
         require(
-            bounty_state == BOUNTY_STATE.AWAITING_CLAIM,
-            "This bounty is either open, closed, or canceled."
+            bounty_state == BOUNTY_STATE.OPEN,
+            "This bounty is either closed or withdrawn."
         );
         hunter_address = _hunter_address;
         bounty_state = BOUNTY_STATE.CLOSED;
