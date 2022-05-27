@@ -1,0 +1,5 @@
+Brownie==0.5.1
+click==8.0.3
+eth_brownie==1.18.1
+pandas==1.4.2
+web3==5.27.0

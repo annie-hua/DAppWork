@@ -369,6 +369,10 @@ def pythonic_dappwork_ui():
                             bounty_hunter_eth_address, {"from": oracle_account}
                         )
 
+                        print(
+                            "\nCongrats! You just closed this bounty and the bounty hunter will be sent the reward. Thank you for using DappWork!"
+                        )
+
                     else:
                         print(
                             "Error: The pull request you provided either has a comment body that has a Github issue link that does not match the Github issue link of the bounty you are wanting to close, or there is some other problem with it."
