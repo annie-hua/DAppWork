@@ -27,7 +27,21 @@ with open("./build/contracts/Bounty.json") as f:
 
 bounty_abi = bounty_json["abi"]
 
+# Please change the contract address as you change the network
+
+# For Kovan Testnet (Verified contract)
 bounty_factory_contract_address = "0x1FE94CDA16AAF50f300fE78AC97A3d677452bA2a"
+
+# For MATIC Mumbai Testnet (Verified contract)
+# bounty_factory_contract_address = "0x8198031E76c94d90a503982E9b06583E0A8A26c7"
+
+# For AVAX Fuji Testnet (Had trouble verifying contract)
+# bounty_factory_contract_address = "0x86a637B9FDBF5DdeFEe76048b8495D71DDCb21d8"
+
+# For BSC Testnet (Had trouble verifying contract)
+# bounty_factory_contract_address = "0x7514a23267a51B3dF5c6790C8DD765Fcc2118090"
+
+
 bounty_factory_contract = Contract.from_abi(
     "Bounty_Factory_Contract", bounty_factory_contract_address, bounty_factory_abi
 )
